@@ -1,6 +1,7 @@
 from django.db import models
 # Create your models here.
 # import owner. models and reciver.models
+#pushing
         
 '''
 table holding all the records of the people using the app. 
