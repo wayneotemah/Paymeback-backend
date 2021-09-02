@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from django.urls.conf import include
 
 from django.conf.urls import url
+from rest_framework.documentation import  include_docs_urls
 from rest_framework.schemas import get_schema_view
 
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path('',include('my_borrower.urls')), 
     path('',include('account.urls')),
     path('',include('transaction.urls')),
+    path('docs/',include_docs_urls(title = 'PaymebackAPI')),
     path('', get_schema_view(
         title="Paymeback",
         description="Paymeback APIs",
