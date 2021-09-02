@@ -19,12 +19,21 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls.conf import include
 
+from django.conf.urls import url
+from rest_framework.schemas import get_schema_view
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('my_lender.urls')),
     path('',include('my_borrower.urls')), 
     path('',include('account.urls')),
     path('',include('transaction.urls')),
+    path('', get_schema_view(
+        title="Paymeback",
+        description="Paymeback APIs",
+        version="1.0.0"),name='openapi-schema'
+        ),
 
 ]
 
