@@ -15,19 +15,27 @@ class accountListView(APIView):
     """
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+
+
     def get(self, request,format=None):
-        accounts = Account.objects.all()
-        serializer = accountSerializer(accounts, many = True)
-        return Response(serializer.data)
+        try:
+            accounts = Account.objects.all()
+            serializer = accountSerializer(accounts, many = True)
+            return Response(serializer.data)
+        except Account.DoesNotExist:
+           return HttpResponse(status = status.HTTP_404_NOT_FOUND)
+        
 
     def post(self, request):
-        serializer = accountSerializer(data=request.data)
-        if serializer.is_valid():
-            account = serializer.save()
-            # token=Token.objects.get(user=account).key
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            serializer = accountSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                # token=Token.objects.get(user=account).key
+                return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Account.DoesNotExist:
+            return HttpResponse(status = status.HTTP_404_NOT_FOUND)
 
 class accountDetails(APIView):
     """
@@ -35,34 +43,33 @@ class accountDetails(APIView):
     """
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    
-    
-    def get_object(self,pk):
-        """
-        method to get objects from cutomer table
-        """
-        try:
-            return Account.objects.get(pk=pk)
-        except Account.DoesNotExist:
-            return HttpResponse(status = status.HTTP_404_NOT_FOUND)
-    
 
 
     def get(self,request,pk,format=None):
-        user = self.get_object(pk)
-        serializer = accountSerializer(user)
-        return Response(serializer.data)
+        try:
+            user = Account.objects.get(pk=pk)
+            serializer = accountSerializer(user)
+            return Response(serializer.data)
+        except Account.DoesNotExist:
+            return HttpResponse(status = status.HTTP_404_NOT_FOUND)
 
     def put(self,request,pk,format=None):
         #one involved in any transaction with the users
-        clients = self.get_object(pk)
-        serializer = accountSerializer(clients, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            clients = Account.objects.get(pk=pk)
+            serializer = accountSerializer(clients, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return HttpResponse(status = status.HTTP_404_NOT_FOUND)
+
 
     def delet(self, request, pk, format=None):
-        client = self.get_object(pk)
-        client.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            client = Account.objects.get(pk=pk)
+            client.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return HttpResponse(status = status.HTTP_404_NOT_FOUND)

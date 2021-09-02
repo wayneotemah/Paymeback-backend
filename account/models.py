@@ -32,7 +32,7 @@ class MyAccountManager(BaseUserManager):
 
     def create_superuser(self,email,password,phoneNumber,username):
         user = self.create_user(
-            email=self.normalize_email(email=email),
+            email=self.normalize_email(email),
             password=password,
             username=username,
             phoneNumber=phoneNumber,

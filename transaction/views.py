@@ -41,31 +41,31 @@ class TransactionDetails(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     
-    def get_object(self,pk):
-        """
-        method to get objects from transaction table
-        """
-        try:
-            return Transaction.objects.get(pk=pk)
-        except Transaction.DoesNotExist:
-            return HttpResponse(status = status.HTTP_404_NOT_FOUND)
+
      
     def get(self,request,pk,format=None):
-        transaction = Transaction.objects.filter(transactor=pk)
+        transaction = Transaction.objects.filter(pk=pk)
         serializer = TransactionSerializer(transaction, many = True)
         return Response(serializer.data)
 
     def put(self,request,pk,format=None):
-        transaction = self.get_object(pk)
+        try:
+            transaction =  Transaction.objects.get(pk=pk)
 
-        serializer = TransactionSerializer(transaction, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = TransactionSerializer(transaction, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Transaction.DoesNotExist:
+            return HttpResponse(status = status.HTTP_404_NOT_FOUND)
+
+
 
     def delet(self, request, pk, format=None):
-        transaction = self.get_object(pk)
-        transaction.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+        try:
+            transaction =  Transaction.objects.get(pk=pk)
+            transaction.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Transaction.DoesNotExist:
+            return HttpResponse(status = status.HTTP_404_NOT_FOUND)
